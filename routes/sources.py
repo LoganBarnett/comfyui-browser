@@ -1,4 +1,4 @@
-from os import path, scandir, mkdir
+from os import path, scandir, makedirs
 import json
 from aiohttp import web, ClientSession, ClientTimeout
 import re
@@ -17,13 +17,13 @@ def handle_remove_readonly(func, path, exc):
         raise
 
 async def api_get_sources(_):
-    if not path.exists(sources_path):
+    if not path.exists(sources_path()):
         return web.json_response({
             'sources': []
         })
 
     sources = []
-    source_list = scandir(sources_path)
+    source_list = scandir(sources_path())
     source_list = sorted(source_list, key=lambda f: (-f.stat().st_ctime))
     for item in source_list:
         if not path.exists(item.path):
@@ -58,8 +58,7 @@ async def api_create_source(request):
     if not repo_url:
         return web.Response(status=400)
 
-    if not path.exists(sources_path):
-        mkdir(sources_path)
+    makedirs(sources_path(), exist_ok=True)
 
     pattern = r'[\:\/]([a-zA-Z0-9-_]+)\/([a-zA-Z0-9-_]+)(\.git)?'
     ret = re.search(pattern, repo_url)
@@ -69,7 +68,7 @@ async def api_create_source(request):
         return web.Response(status=400, text='wrong url')
 
     cmd = f'git clone --depth 1 {repo_url} {author}-{name}'
-    ret = run_cmd(cmd, sources_path)
+    ret = run_cmd(cmd, sources_path())
     if ret.returncode != 0:
         return web.Response(status=400, text=ret.stdout + ret.stderr)
 
@@ -83,7 +82,7 @@ async def api_delete_source(request):
     if not name:
         return web.Response(status=401)
 
-    target_path = path.join(sources_path, name)
+    target_path = path.join(sources_path(), name)
     if not path.exists(target_path):
         return web.Response(status=404)
 
@@ -96,11 +95,11 @@ async def api_sync_source(request):
 
     if not name:
         return web.Response(status=401)
-    if not path.exists(path.join(sources_path, name)):
+    if not path.exists(path.join(sources_path(), name)):
         return web.Response(status=404)
 
     cmd = f'git pull'
-    ret = run_cmd(cmd, path.join(sources_path, name))
+    ret = run_cmd(cmd, path.join(sources_path(), name))
 
     if ret.returncode == 0:
         return web.Response(status=200)
