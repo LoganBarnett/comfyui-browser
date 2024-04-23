@@ -9,7 +9,7 @@ import copy
 
 import folder_paths
 
-from ..utils import SERVER_BASE_URL
+from ..utils import SERVER_BASE_URL, log
 
 class XyzPlot:
     CATEGORY = "Browser"
