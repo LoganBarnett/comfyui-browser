@@ -107,6 +107,7 @@ class XyzPlot:
 
             # for some special network environments like AutoDL
             proxies = {"http": "", "https": ""}
+            log(f'Queueing XYZ prompt: {prompt}')
             return requests.post(SERVER_BASE_URL + '/prompt', data=data, proxies=proxies)
 
 
