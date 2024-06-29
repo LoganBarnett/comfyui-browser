@@ -124,7 +124,7 @@ class XyzPlot:
             row = []
             for iy, vy in enumerate(values_y):
                 vy = vy.strip()
-                x_original = new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]]
+                x_original = prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]]
                 if update_mode_x == 'append':
                     log(f'Appending {vx} to {x_original}')
                     new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = x_original + vx
@@ -132,7 +132,7 @@ class XyzPlot:
                     new_prompt[input_x["node_id"]]["inputs"][input_x["widget_name"]] = vx
                 else:
                     log(f'Update mode {update_mode_x} not supported!')
-                y_original = new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]]
+                y_original = prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]]
                 if update_mode_y == 'append':
                     log(f'Appending {vy} to {y_original}')
                     new_prompt[input_y["node_id"]]["inputs"][input_y["widget_name"]] = y_original + vy
